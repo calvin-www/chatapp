@@ -5,28 +5,27 @@ import { createConversation, saveMessage, getMessages } from '@/app/utils/firest
 import { auth } from '@/app/utils/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import SignIn from './SignIn'
+import ReactMarkdown from'react-markdown'
 
 interface Message {
   text: string;
   sender: 'user' | 'ai';
 }
+interface ChatProps {
+  conversationId: string;
+  onTitleChange: () => void;
+}
 
-const Chat = () => {
+const Chat: React.FC<ChatProps> = ({ conversationId, onTitleChange }) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [conversationId, setConversationId] = useState<string | null>(null)
   const [user] = useAuthState(auth)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    if (user && !conversationId) {
-      createConversation(user.uid)
-          .then(id => setConversationId(id))
-          .catch(error => console.error('Error creating conversation:', error));
-    }
-  }, [user, conversationId]);
-
+  const handleTitleChange = () => {
+    onTitleChange();
+  };
   useEffect(() => {
     if (conversationId) {
       getMessages(conversationId)
@@ -42,17 +41,21 @@ const Chat = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
   const handleSend = async () => {
-    if (input.trim() && user && conversationId) {
+    if (input.trim() && user) {
       const userMessage: Message = { text: input, sender: 'user' };
-      setMessages(prevMessages => [...prevMessages, userMessage])
-      setInput('')
-      setIsLoading(true)
+      setMessages(prevMessages => [...prevMessages, userMessage]);
+      setInput('');
+      setIsLoading(true);
 
       try {
         await saveMessage(conversationId, userMessage);
 
+        // If this is the first message, a title will be generated
+        if (messages.length === 0) {
+          // After the title is generated and saved
+          onTitleChange(); // Call this function to trigger a refresh of the ChatTable
+        }
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: {
@@ -129,7 +132,11 @@ const Chat = () => {
                   ? 'bg-primary text-white rounded-br-none' 
                   : 'bg-gray-200 text-black rounded-bl-none'
               }`}>
-                {message.text}
+                {message.sender === 'user' ? (
+                    message.text
+                ) : (
+                    <ReactMarkdown>{message.text}</ReactMarkdown>
+                )}
               </div>
             </div>
           ))}
