@@ -14,10 +14,16 @@ interface Message {
 interface ChatProps {
   conversationId: string;
   onTitleChange: () => void;
+  isNewConversation: boolean;
+  onNewConversationCreated: (newId: string) => void;
 }
 
-const Chat: React.FC<ChatProps> = ({ conversationId, onTitleChange }) => {
-  const [messages, setMessages] = useState<Message[]>([])
+const Chat: React.FC<ChatProps> = ({
+                                     conversationId,
+                                     onTitleChange,
+                                     isNewConversation,
+                                     onNewConversationCreated
+                                   }) => {  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [user] = useAuthState(auth)
@@ -41,65 +47,78 @@ const Chat: React.FC<ChatProps> = ({ conversationId, onTitleChange }) => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  const handleSend = async () => {
-    if (input.trim() && user) {
-      const userMessage: Message = { text: input, sender: 'user' };
-      setMessages(prevMessages => [...prevMessages, userMessage]);
-      setInput('');
-      setIsLoading(true);
 
-      try {
-        await saveMessage(conversationId, userMessage);
+const handleSend = async () => {
+  if (input.trim() && user) {
+    const userMessage: Message = { text: input, sender: 'user' };
+    setMessages(prevMessages => [...prevMessages, userMessage]);
+    setInput('');
+    setIsLoading(true);
 
-        // If this is the first message, a title will be generated
-        if (messages.length === 0) {
-          // After the title is generated and saved
-          onTitleChange(); // Call this function to trigger a refresh of the ChatTable
-        }
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: input,
-            conversationHistory: messages.map(msg => `${msg.sender === 'user' ? 'Human' : 'AI'}: ${msg.text}`).join('\n')
-          }),
-        });
+    try {
+  let actualConversationId = conversationId;
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+  if (isNewConversation) {
+    actualConversationId = await createConversation(user.uid);
+    onNewConversationCreated(actualConversationId);
+  }
 
-        const reader = response.body?.getReader();
-        if (!reader) {
-          throw new Error('Response body is not readable');
-        }
+  await saveMessage(actualConversationId, userMessage);
 
-        let aiReply = '';
-        const aiMessage: Message = { text: aiReply, sender: 'ai' };
-        setMessages(prevMessages => [...prevMessages, aiMessage]);
+  setMessages(prevMessages => [...prevMessages, userMessage]);
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const chunk = new TextDecoder().decode(value);
-          aiReply += chunk;
-          setMessages(prevMessages => 
-            prevMessages.map((msg, index) => 
-              index === prevMessages.length - 1 ? { ...msg, text: aiReply } : msg
-            )
-          );
-        }
+  if (messages.length === 0) {
+    onTitleChange();
+  }
 
-        await saveMessage(conversationId, { text: aiReply, sender: 'ai' });
-      } catch (error) {
-        console.error('Error sending message:', error);
-      } finally {
-        setIsLoading(false)
+  // ... rest of the function remains the same
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: input,
+          conversationHistory: messages.map(msg => `${msg.sender === 'user' ? 'Human' : 'AI'}: ${msg.text}`).join('\n')
+        }),
+      });
+
+      if (!response.ok) {
+        console.error(`HTTP error! status: ${response.status}`);
+        return;
       }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        console.error('Response body is not readable');
+        return;
+      }
+
+      let aiReply = '';
+      const aiMessage: Message = { text: aiReply, sender: 'ai' };
+      setMessages(prevMessages => [...prevMessages, aiMessage]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = new TextDecoder().decode(value);
+        aiReply += chunk;
+        setMessages(prevMessages =>
+          prevMessages.map((msg, index) =>
+            index === prevMessages.length - 1 ? { ...msg, text: aiReply } : msg
+          )
+        );
+      }
+
+      await saveMessage(actualConversationId, { text: aiReply, sender: 'ai' });
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setIsLoading(false);
     }
   }
+};
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -161,8 +180,13 @@ const Chat: React.FC<ChatProps> = ({ conversationId, onTitleChange }) => {
             onKeyPress={handleKeyPress}
             className="flex-grow mr-2 bg-gray-700 text-gray-100"
         />
-        <Button onClick={handleSend} disabled={isLoading} className="bg-cyan-600 text-white hover:bg-cyan-500">Send</Button>
-
+<Button 
+  onClick={handleSend} 
+  disabled={isLoading} 
+  className="text-white font-bold py-2 px-4 rounded transition-all duration-300 ease-in-out bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-500 hover:from-blue-500 hover:via-cyan-500 hover:to-blue-600 shadow-lg hover:shadow-cyan-500/50"
+>
+  Send
+</Button>
       </div>
     </Card>
   );
