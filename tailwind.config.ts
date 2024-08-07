@@ -5,20 +5,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        'primary': '#0074ff',
+        'secondary': '#464d59',
         fontFamily: {
           primary: "Inter",
           secondary: "Poppins",
         },
         background: "#0F172A",
         foreground: "#E2E8F0",
-        primary: {
-          DEFAULT: "#3B82F6",
-          foreground: "#FFFFFF",
-        },
-        secondary: {
-          DEFAULT: "#00FFFF",
-          foreground: "#000000",
-        },
       },
     },
   },

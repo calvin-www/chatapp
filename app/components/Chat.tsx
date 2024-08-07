@@ -119,42 +119,53 @@ const Chat: React.FC<ChatProps> = ({ conversationId, onTitleChange }) => {
   }
 
   return (
-      <Card className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2>Welcome, {user.displayName}</h2>
-          <Button onClick={() => auth.signOut()}>Sign Out</Button>
-        </div>
-        <div className="h-96 overflow-y-auto mb-4">
-          {messages.map((message, index) => (
-            <div key={index} className={`mb-2 ${message.sender === 'user' ? 'flex justify-end' : 'flex justify-start'}`}>
-              <div className={`max-w-xs rounded-lg p-3 ${
-                message.sender === 'user' 
-                  ? 'bg-primary text-white rounded-br-none' 
-                  : 'bg-gray-200 text-black rounded-bl-none'
-              }`}>
-                {message.sender === 'user' ? (
-                    message.text
-                ) : (
-                    <ReactMarkdown>{message.text}</ReactMarkdown>
-                )}
-              </div>
+    <Card className="p-4 bg-gray-800 text-gray-100">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-cyan-400">Welcome, {user.displayName}</h2>
+        <Button
+          onClick={() => auth.signOut()}
+          className="bg-gray-700 text-cyan-400 hover:bg-gray-600"
+        >
+          Sign Out
+        </Button>
+      </div>
+      <div className="h-96 overflow-y-auto mb-4">
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`mb-2 ${message.sender === "user" ? "flex justify-end" : "flex justify-start"}`}
+          >
+            <div
+              className={`max-w-xs rounded-lg p-3 ${
+                message.sender === "user"
+                  ? "bg-cyan-600 text-white rounded-br-none"
+                  : "bg-gray-700 text-gray-100 rounded-bl-none"
+              }`}
+            >
+              {message.sender === "user" ? (
+                message.text
+              ) : (
+                <ReactMarkdown>{message.text}</ReactMarkdown>
+              )}
             </div>
-          ))}
-          {isLoading && <div className="text-center">AI is typing...</div>}
-          <div ref={messagesEndRef} />
-        </div>
-        <div className="flex">
-          <Input
+          </div>
+        ))}
+        {isLoading && <div className="text-center">AI is typing...</div>}
+        <div ref={messagesEndRef} />
+      </div>
+      <div className="flex">
+        <Input
             placeholder="Type your message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="flex-grow mr-2"
-          />
-          <Button onClick={handleSend} disabled={isLoading}>Send</Button>
-        </div>
-      </Card>
-  )
+            className="flex-grow mr-2 bg-gray-700 text-gray-100"
+        />
+        <Button onClick={handleSend} disabled={isLoading} className="bg-cyan-600 text-white hover:bg-cyan-500">Send</Button>
+
+      </div>
+    </Card>
+  );
 }
 
 export default Chat

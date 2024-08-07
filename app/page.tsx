@@ -43,8 +43,8 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
       <h1 className="text-3xl font-bold mb-8">This is a real guy trust me</h1>
-      <div className="w-full max-w-6xl flex gap-8">
-        <div className="w-1/3">
+      <div className="w-full max-w-6xl flex gap-8 bg-">
+        <div className=" w-1/3 ">
           <ChatTable
             onSelectConversation={handleSelectConversation}
             onCreateNewChat={handleCreateNewChat}
