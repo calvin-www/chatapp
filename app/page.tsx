@@ -7,6 +7,8 @@ import { auth } from "@/app/utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import FeedbackForm from "./components/FeedbackForm";
 import { Button } from "@nextui-org/react";
+import SignIn from "./components/SignIn";
+
 interface Conversation {
   id: string;
   title: string;
@@ -15,8 +17,10 @@ interface Conversation {
 }
 
 export default function Home() {
-  const [user] = useAuthState(auth);
-  const [selectedConversation, setSelectedConversation] = useState<string>("temp-" + Date.now());
+  const [user, loading] = useAuthState(auth);
+  const [selectedConversation, setSelectedConversation] = useState<string>(
+    "temp-" + Date.now(),
+  );
   const [newConversationTrigger, setNewConversationTrigger] = useState(0);
   const [titleChangeTrigger, setTitleChangeTrigger] = useState(0);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
@@ -54,41 +58,71 @@ export default function Home() {
       console.error("Error deleting conversation:", error);
     }
   };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-2xl mb-4">Welcome!!</h1>
+        <p className="mb-4">Please sign in to start chatting.</p>
+        <SignIn />
+      </div>
+    );
+  }
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
-      <h1 className="text-3xl font-bold mb-8">This is a real guy trust me</h1>
-      <div className="w-full max-w-6xl flex gap-8 bg-">
-        <div className=" w-1/3 ">
-          <ChatTable
+    <main className="flex min-h-screen flex-col items-center p-24 relative">
+      <div className="absolute inset-0 z-0 bg-[#161517]">
+        <svg
+          className="w-full h-full svg-color)"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+        >
+          <image
+            href="/images/topography.svg"
+            width="100%"
+            height="100%"
+            preserveAspectRatio="none"
+          />
+        </svg>
+      </div>
+      <div className="relative z-10">
+        <h1 className="text-3xl font-bold mb-8">This is a real guy trust me</h1>
+        <div className="w-full max-w-6xl flex gap-8 bg-">
+          <div className=" w-1/3 ">
+            <ChatTable
               onSelectConversation={handleSelectConversation}
               onCreateNewChat={handleCreateNewChat}
               onDeleteConversation={handleDelete}
               selectedConversationId={selectedConversation}
               newConversationTrigger={newConversationTrigger}
               titleChangeTrigger={titleChangeTrigger}
-          />
+            />
+          </div>
+          <div className="w-2/3">
+            <Chat
+              conversationId={selectedConversation}
+              onTitleChange={handleTitleChange}
+              isNewConversation={selectedConversation.startsWith("temp-")}
+              onNewConversationCreated={(newId) =>
+                setSelectedConversation(newId)
+              }
+            />
+          </div>
         </div>
-        <div className="w-2/3">
-          <Chat
-            conversationId={selectedConversation}
-            onTitleChange={handleTitleChange}
-            isNewConversation={selectedConversation.startsWith("temp-")}
-            onNewConversationCreated={(newId) => setSelectedConversation(newId)}
-          />
-        </div>
+        <Button
+          className="fixed bottom-4 right-4 rounded-full"
+          onClick={() => setIsFeedbackModalOpen(true)}
+        >
+          Feedback
+        </Button>
+        <FeedbackForm
+          isOpen={isFeedbackModalOpen}
+          onClose={() => setIsFeedbackModalOpen(false)}
+          onSubmit={handleFeedbackSubmit}
+        />
       </div>
-      <Button
-        className="fixed bottom-4 right-4 rounded-full"
-        onClick={() => setIsFeedbackModalOpen(true)}
-      >
-        Feedback
-      </Button>
-      <FeedbackForm
-        isOpen={isFeedbackModalOpen}
-        onClose={() => setIsFeedbackModalOpen(false)}
-        onSubmit={handleFeedbackSubmit}
-      />
     </main>
   );
 }
