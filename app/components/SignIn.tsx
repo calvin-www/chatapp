@@ -49,7 +49,7 @@ const SignIn = () => {
         <div className="text-center">
           <h1 className="text-9xl mb-3 font-bold bg-gradient-to-r from-blue-400 to-cyan-500 text-transparent bg-clip-text">Welcome!</h1>
           <p className="text-3xl mb-6">Please sign in to start chatting.</p>
-          <Button 
+          <Button
               onClick={signInWithGoogle}
               size="lg"
               className="transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:bg-gradient-to-r from-blue-400 to-cyan-500"

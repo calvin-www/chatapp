@@ -65,13 +65,9 @@ const handleSend = async () => {
 
   await saveMessage(actualConversationId, userMessage);
 
-  setMessages(prevMessages => [...prevMessages, userMessage]);
-
   if (messages.length === 0) {
     onTitleChange();
   }
-
-  // ... rest of the function remains the same
 
       const response = await fetch('/api/chat', {
         method: 'POST',

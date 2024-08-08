@@ -19,7 +19,7 @@ interface Conversation {
 export default function Home() {
   const [user, loading] = useAuthState(auth);
   const [selectedConversation, setSelectedConversation] = useState<string>(
-    "temp-" + Date.now(),
+      "temp-" + Date.now(),
   );
   const [newConversationTrigger, setNewConversationTrigger] = useState(0);
   const [titleChangeTrigger, setTitleChangeTrigger] = useState(0);
@@ -40,7 +40,7 @@ export default function Home() {
   };
 
   const handleFeedbackSubmit = (feedback: {
-    rating: string | null;
+    rating: number;
     comment: string;
   }) => {
     console.log("Feedback received:", feedback);
@@ -64,63 +64,63 @@ export default function Home() {
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <SignIn />
-      </div>
+        <div className="flex flex-col items-center justify-center h-screen">
+          <SignIn />
+        </div>
     );
   }
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 relative">
-      <div className="absolute inset-0 z-0 bg-[#161517]">
-        <svg
-          className="w-full h-full svg-color)"
-          xmlns="http://www.w3.org/2000/svg"
-          xmlnsXlink="http://www.w3.org/1999/xlink"
-        >
-          <image
-            href="/images/topography.svg"
-            width="100%"
-            height="100%"
-            preserveAspectRatio="none"
-          />
-        </svg>
-      </div>
-      <div className="relative z-10">
-        <h1 className="text-3xl font-bold mb-8">This is a real guy trust me</h1>
-        <div className="w-full max-w-6xl flex gap-8 bg-">
-          <div className=" w-1/3 min-w-[300px]">
-            <ChatTable
-              onSelectConversation={handleSelectConversation}
-              onCreateNewChat={handleCreateNewChat}
-              onDeleteConversation={handleDelete}
-              selectedConversationId={selectedConversation}
-              newConversationTrigger={newConversationTrigger}
-              titleChangeTrigger={titleChangeTrigger}
+      <main className="flex min-h-screen flex-col items-center p-24 relative">
+        <div className="absolute inset-0 z-0 bg-[#161517]">
+          <svg
+              className="w-full h-full svg-color)"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+          >
+            <image
+                href="/images/topography.svg"
+                width="100%"
+                height="100%"
+                preserveAspectRatio="none"
             />
-          </div>
-          <div className="w-2/3">
-            <Chat
-              conversationId={selectedConversation}
-              onTitleChange={handleTitleChange}
-              isNewConversation={selectedConversation.startsWith("temp-")}
-              onNewConversationCreated={(newId) =>
-                setSelectedConversation(newId)
-              }
-            />
-          </div>
+          </svg>
         </div>
-        <Button
-          className="fixed bottom-4 right-4 rounded-full"
-          onClick={() => setIsFeedbackModalOpen(true)}
-        >
-          Feedback
-        </Button>
-        <FeedbackForm
-          isOpen={isFeedbackModalOpen}
-          onClose={() => setIsFeedbackModalOpen(false)}
-          onSubmit={handleFeedbackSubmit}
-        />
-      </div>
-    </main>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold mb-8">This is a real guy trust me</h1>
+          <div className="w-full max-w-6xl flex gap-8 bg-">
+            <div className=" w-1/3 min-w-[300px]">
+              <ChatTable
+                  onSelectConversation={handleSelectConversation}
+                  onCreateNewChat={handleCreateNewChat}
+                  onDeleteConversation={handleDelete}
+                  selectedConversationId={selectedConversation}
+                  newConversationTrigger={newConversationTrigger}
+                  titleChangeTrigger={titleChangeTrigger}
+              />
+            </div>
+            <div className="w-2/3">
+              <Chat
+                  conversationId={selectedConversation}
+                  onTitleChange={handleTitleChange}
+                  isNewConversation={selectedConversation.startsWith("temp-")}
+                  onNewConversationCreated={(newId) =>
+                      setSelectedConversation(newId)
+                  }
+              />
+            </div>
+          </div>
+          <Button
+              className="fixed bottom-4 right-4 rounded-full"
+              onClick={() => setIsFeedbackModalOpen(true)}
+          >
+            Feedback
+          </Button>
+          <FeedbackForm
+              isOpen={isFeedbackModalOpen}
+              onClose={() => setIsFeedbackModalOpen(false)}
+              onSubmit={handleFeedbackSubmit}
+          />
+        </div>
+      </main>
   );
 }

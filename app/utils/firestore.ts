@@ -7,6 +7,13 @@ interface Conversation {
   lastMessage: string;
   timestamp: Date;
 }
+interface Feedback {
+  userId: string;
+  name: string;
+  rating: number;
+  comment: string;
+  timestamp: Date;
+}
 
 
 export const createConversation = async (userId: string) => {
@@ -112,6 +119,17 @@ export const getUserConversations = async (userId: string): Promise<Conversation
     });
   } catch (error) {
     console.error('Error getting user conversations:', error);
+    throw error;
+  }
+};
+
+export const saveFeedback = async (feedback: Feedback) => {
+  try {
+    const docRef = await addDoc(collection(db, 'feedback'), feedback);
+    console.log('Feedback saved with ID: ', docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error('Error saving feedback:', error);
     throw error;
   }
 };
