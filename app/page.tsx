@@ -65,8 +65,6 @@ export default function Home() {
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-2xl mb-4">Welcome!!</h1>
-        <p className="mb-4">Please sign in to start chatting.</p>
         <SignIn />
       </div>
     );
@@ -90,7 +88,7 @@ export default function Home() {
       <div className="relative z-10">
         <h1 className="text-3xl font-bold mb-8">This is a real guy trust me</h1>
         <div className="w-full max-w-6xl flex gap-8 bg-">
-          <div className=" w-1/3 ">
+          <div className=" w-1/3 min-w-[300px]">
             <ChatTable
               onSelectConversation={handleSelectConversation}
               onCreateNewChat={handleCreateNewChat}
