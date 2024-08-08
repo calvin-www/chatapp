@@ -1,5 +1,5 @@
 rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.env' \
 -e "ssh -i C:\Users\calvin\IdeaProjects\chatapp\.ssh\texas-calvin-pc.pem" \
-. ec2-user@ec2-34-230-15-146.compute-1.amazonaws.com:~/app
+. ubuntu@ec2-54-234-11-119.compute-1.amazonaws.com:~/app
 
-ssh -i "texas-calvin-pc.pem" ec2-user@ec2-34-230-15-146.compute-1.amazonaws.com
+ssh -i "texas-calvin-pc.pem" ubuntu@ec2-54-234-11-119.compute-1.amazonaws.com

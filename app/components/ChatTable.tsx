@@ -77,10 +77,11 @@ const ChatTable: React.FC<ChatTableProps> = ({
   };
 
   return (
-    <div className="bg-[#1F2937] text-gray-100 p-4 rounded-lg w-full overflow-x-auto">
+    <div className="bg-[#1F2937] text-gray-100 p-4 rounded-xl w-full overflow-x-auto">
       <Button
         onClick={onCreateNewChat}
-        className="mb-4 w-full text-white font-bold py-2 px-4 rounded transition-all duration-300 ease-in-out bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-500 hover:from-blue-500 hover:via-cyan-500 hover:to-blue-600 shadow-lg hover:shadow-cyan-500/50"
+        radius='md'
+        className="mb-4 w-full text-white font-bold py-2 px-4 transition-all duration-300 ease-in-out bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-500 hover:from-blue-500 hover:via-cyan-500 hover:to-blue-600 shadow-lg hover:shadow-cyan-500/50"
       >
         Create New Chat
       </Button>
@@ -98,7 +99,7 @@ const ChatTable: React.FC<ChatTableProps> = ({
             onSelectConversation(selectedKey);
           }}
           classNames={{
-            base: "w-full min-w-full p-0 rounded-xl",
+            base: "w-full min-w-full p-0 rounded-3xl",
             table: "min-w-full bg-[#1F2937] p-0",
             th: "bg-gray-800 text-cyan-400 sticky top-0",
             td: "text-gray-100 bg-gray-700",
